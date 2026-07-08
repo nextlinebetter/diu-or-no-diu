@@ -38,6 +38,10 @@ const selectors = {
 
 let game = createEmptyGame();
 let audioContext = null;
+const audioFiles = {
+  good: createAudioElement("sounds/cheer.wav"),
+  bad: createAudioElement("sounds/sad.wav")
+};
 
 function createEmptyGame() {
   return {
@@ -113,6 +117,30 @@ function remainingAmounts() {
     .map((item) => item.amount);
 }
 
+function createAudioElement(source) {
+  const audio = new Audio(source);
+  audio.preload = "auto";
+  return audio;
+}
+
+function playAudioFile(kind) {
+  const audio = audioFiles[kind];
+  if (!audio) {
+    return false;
+  }
+
+  audio.currentTime = 0;
+  const playPromise = audio.play();
+  if (!playPromise) {
+    return true;
+  }
+
+  playPromise.catch(() => {
+    playSynthResultSound(kind === "good");
+  });
+  return true;
+}
+
 function getAudioContext() {
   const AudioContextClass = window.AudioContext || window.webkitAudioContext;
   if (!AudioContextClass) {
@@ -149,7 +177,7 @@ function playTone(frequency, startTime, duration, volume, type = "sine") {
   oscillator.stop(startTime + duration + 0.02);
 }
 
-function playOpenResultSound(isGoodOpen) {
+function playSynthResultSound(isGoodOpen) {
   const context = getAudioContext();
   if (!context) {
     return;
@@ -167,6 +195,15 @@ function playOpenResultSound(isGoodOpen) {
   playTone(392, now, 0.18, 0.07, "sawtooth");
   playTone(329.63, now + 0.16, 0.2, 0.065, "sawtooth");
   playTone(261.63, now + 0.34, 0.28, 0.06, "triangle");
+}
+
+function playOpenResultSound(isGoodOpen) {
+  const kind = isGoodOpen ? "good" : "bad";
+  if (playAudioFile(kind)) {
+    return;
+  }
+
+  playSynthResultSound(isGoodOpen);
 }
 
 function isGoodOpenedAmount(amount) {
