@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>丢不丢</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="game-stage" aria-label="Deal or No Deal game">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Deal or No Deal · RMB Edition</p>
+            <h1>丢不丢</h1>
+          </div>
+          <div class="status-strip">
+            <div>
+              <span>阶段</span>
+              <strong id="phaseLabel">配置</strong>
+            </div>
+            <div>
+              <span>你的箱子</span>
+              <strong id="playerCaseLabel">-</strong>
+            </div>
+            <div>
+              <span>回合</span>
+              <strong id="roundLabel">-</strong>
+            </div>
+          </div>
+        </header>
+
+        <section class="board-wrap">
+          <aside class="money-board money-board-low" aria-label="Remaining low values">
+            <h2>小金额</h2>
+            <div id="lowMoneyBoard" class="money-grid"></div>
+          </aside>
+
+          <div class="case-zone">
+            <div id="caseGrid" class="case-grid"></div>
+            <div class="message-row">
+              <p id="messageText">调整配置后开始游戏。</p>
+              <button id="primaryAction" type="button">开始新局</button>
+            </div>
+          </div>
+
+          <aside class="money-board money-board-high" aria-label="Remaining high values">
+            <h2>大金额</h2>
+            <div id="highMoneyBoard" class="money-grid"></div>
+          </aside>
+        </section>
+      </section>
+
+      <aside class="control-panel" aria-label="Game settings">
+        <section class="panel-section">
+          <div class="section-head">
+            <h2>配置</h2>
+            <button id="resetConfig" class="ghost-button" type="button" title="恢复默认配置">重置</button>
+          </div>
+          <details class="collapse-section">
+            <summary>箱子金额</summary>
+            <div class="collapse-body">
+              <label for="amountInput">金额组</label>
+              <textarea id="amountInput" spellcheck="false"></textarea>
+              <div class="case-amount-head">
+                <h3>本局箱子金额</h3>
+              </div>
+              <div id="caseAmountList" class="case-amount-list"></div>
+            </div>
+          </details>
+        </section>
+
+        <section class="panel-section">
+          <label for="offerInput">Banker 函数</label>
+          <textarea id="offerInput" class="code-input" spellcheck="false"></textarea>
+        </section>
+
+        <section class="panel-section offer-panel">
+          <h2>Banker Offer</h2>
+          <div class="offer-value" id="offerValue">-</div>
+          <div class="offer-actions">
+            <button id="dealButton" type="button" disabled>Deal</button>
+            <button id="noDealButton" type="button" disabled>No Deal</button>
+          </div>
+        </section>
+
+        <section class="panel-section results-panel">
+          <h2>记录</h2>
+          <ol id="historyList"></ol>
+        </section>
+      </aside>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
