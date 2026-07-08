@@ -74,6 +74,16 @@
           <details class="collapse-section">
             <summary>Banker 函数</summary>
             <div class="collapse-body">
+              <div class="mode-group" role="radiogroup" aria-label="Banker 函数模式">
+                <label class="mode-option">
+                  <input type="radio" name="bankerMode" value="classic" checked>
+                  <span>原默认</span>
+                </label>
+                <label class="mode-option">
+                  <input type="radio" name="bankerMode" value="percentile">
+                  <span>分位数</span>
+                </label>
+              </div>
               <label for="offerInput">Banker 函数</label>
               <textarea id="offerInput" class="code-input" spellcheck="false"></textarea>
             </div>

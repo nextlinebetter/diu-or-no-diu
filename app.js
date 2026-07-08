@@ -17,8 +17,27 @@ const defaultOfferFunction = `function bankerOffer(ctx) {
   return Math.round(average * roundPressure * riskDiscount);
 }`;
 
+const percentileOfferFunction = `function bankerOffer(ctx) {
+  const baseRates = [0.35, 0.43, 0.52, 0.62, 0.72, 0.82, 0.90, 0.98, 1.05];
+  const alpha = 0.4;
+  const remaining = [...ctx.remainingAmounts].sort((a, b) => a - b);
+  const ev = remaining.reduce((sum, value) => sum + value, 0) / remaining.length;
+  const playerAmount = ctx.playerCaseAmount;
+  const playerRank = remaining.filter((value) => value <= playerAmount).length;
+  const q = playerRank / remaining.length;
+  const baseRate = baseRates[Math.min(ctx.roundIndex, baseRates.length - 1)];
+  const factor = 1 + alpha * (q - 0.5) * 2;
+  return Math.round(ev * baseRate * factor);
+}`;
+
+const bankerFunctionTemplates = {
+  classic: defaultOfferFunction,
+  percentile: percentileOfferFunction
+};
+
 const selectors = {
   amountInput: document.querySelector("#amountInput"),
+  bankerModeInputs: document.querySelectorAll("input[name='bankerMode']"),
   caseAmountList: document.querySelector("#caseAmountList"),
   offerInput: document.querySelector("#offerInput"),
   lowMoneyBoard: document.querySelector("#lowMoneyBoard"),
@@ -231,6 +250,18 @@ function setPhase(phase) {
     final: "终局"
   };
   selectors.phaseLabel.textContent = labels[phase] || phase;
+}
+
+function setBankerMode(mode) {
+  const template = bankerFunctionTemplates[mode];
+  if (!template) {
+    return;
+  }
+
+  selectors.offerInput.value = template;
+  selectors.bankerModeInputs.forEach((input) => {
+    input.checked = input.value === mode;
+  });
 }
 
 function startGame() {
@@ -453,7 +484,7 @@ function render() {
 
 function resetConfig() {
   selectors.amountInput.value = defaultAmounts.join("\n");
-  selectors.offerInput.value = defaultOfferFunction;
+  setBankerMode("classic");
   setMessage("默认配置已恢复。");
 }
 
@@ -461,6 +492,13 @@ selectors.primaryAction.addEventListener("click", startGame);
 selectors.resetConfig.addEventListener("click", resetConfig);
 selectors.dealButton.addEventListener("click", acceptDeal);
 selectors.noDealButton.addEventListener("click", declineDeal);
+selectors.bankerModeInputs.forEach((input) => {
+  input.addEventListener("change", () => {
+    if (input.checked) {
+      setBankerMode(input.value);
+    }
+  });
+});
 
 resetConfig();
 render();
