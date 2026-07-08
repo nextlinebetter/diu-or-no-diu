@@ -528,17 +528,20 @@ label {
   .board-wrap {
     grid-template-columns: 1fr 1fr;
     grid-template-areas:
-      "cases cases"
-      "low high";
+      "low high"
+      "cases cases";
     overflow: visible;
   }
 
   .case-zone {
-    grid-column: auto;
+    grid-column: 1 / -1;
     grid-row: auto;
   }
 
   .money-board {
+    position: sticky;
+    top: 8px;
+    z-index: 5;
     overflow: visible;
   }
 
@@ -556,7 +559,14 @@ label {
   }
 
   .money-grid {
-    grid-template-columns: repeat(auto-fit, minmax(128px, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 5px;
+  }
+
+  .money-tile {
+    min-height: 24px;
+    padding: 3px 6px;
+    font-size: 0.76rem;
   }
 
   .control-panel {
@@ -583,10 +593,21 @@ label {
 
   .case-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 8px;
+    gap: 10px;
+    overflow: visible;
   }
 
   .case {
+    width: 100%;
+    aspect-ratio: auto;
+    min-width: 0;
     min-height: 70px;
+    padding: 0;
+  }
+
+  .case .case-number {
+    inset: auto 7px 7px;
+    height: 30px;
+    font-size: 1rem;
   }
 }
