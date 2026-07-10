@@ -8,7 +8,7 @@ const originalDealOrNoDealAmounts = [
 
 const defaultAmounts = originalDealOrNoDealAmounts.map((amount) => Number((amount / 1000).toFixed(5)));
 
-const defaultOfferFunction = `function bankerOffer(ctx) {
+const naiveOfferFunction = `function bankerOffer(ctx) {
   const remaining = ctx.remainingAmounts;
   const average = remaining.reduce((sum, value) => sum + value, 0) / remaining.length;
   const max = Math.max(...remaining);
@@ -18,20 +18,24 @@ const defaultOfferFunction = `function bankerOffer(ctx) {
 }`;
 
 const percentileOfferFunction = `function bankerOffer(ctx) {
-  const baseRates = [0.35, 0.43, 0.52, 0.62, 0.72, 0.82, 0.90, 0.98, 1.05];
-  const alpha = 0.4;
+  const baseRates = [0.25, 0.34, 0.43, 0.52, 0.61, 0.70, 0.80, 0.90, 1.00];
+  const alpha = 0.35;
   const remaining = [...ctx.remainingAmounts].sort((a, b) => a - b);
   const ev = remaining.reduce((sum, value) => sum + value, 0) / remaining.length;
   const playerAmount = ctx.playerCaseAmount;
   const playerRank = remaining.filter((value) => value <= playerAmount).length;
   const q = playerRank / remaining.length;
   const baseRate = baseRates[Math.min(ctx.roundIndex, baseRates.length - 1)];
-  const factor = 1 + alpha * (q - 0.5) * 2;
-  return Math.round(ev * baseRate * factor);
+  const noise = 0.85 + Math.random() * 0.30;
+  const maxFactor = 1.35;
+  const minFactor = 0.70;
+  const rawFactor = 1 + alpha * (q - 0.5) * 2;
+  const factor = Math.min(maxFactor, Math.max(minFactor, rawFactor));
+  return Math.round(ev * baseRate * factor * noise);
 }`;
 
 const bankerFunctionTemplates = {
-  classic: defaultOfferFunction,
+  classic: naiveOfferFunction,
   percentile: percentileOfferFunction
 };
 
@@ -484,7 +488,7 @@ function render() {
 
 function resetConfig() {
   selectors.amountInput.value = defaultAmounts.join("\n");
-  setBankerMode("classic");
+  setBankerMode("percentile");
   setMessage("默认配置已恢复。");
 }
 
